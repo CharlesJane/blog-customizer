@@ -14,6 +14,7 @@ import {
 	ArticleStateType,
 	fontSizeOptions,
 	OptionType,
+	defaultArticleState,
 } from 'src/constants/articleProps';
 
 import styles from './ArticleParamsForm.module.scss';
@@ -45,13 +46,14 @@ export const ArticleParamsForm = ({
 		setCurrentState(tempState);
 	};
 
+	const handleReset = () => {
+		setTempState(defaultArticleState);
+		setCurrentState(defaultArticleState);
+	};
+
 	const handleSubmit = (evt: React.FormEvent) => {
 		evt.preventDefault();
 		handleApplication();
-	};
-
-	const handleReset = () => {
-		setTempState(currentState);
 	};
 
 	useEffect(() => {
@@ -117,7 +119,7 @@ export const ArticleParamsForm = ({
 					<div className={styles.bottomContainer}>
 						<Button
 							title='Сбросить'
-							htmlType='reset'
+							htmlType='button'
 							type='clear'
 							onClick={handleReset}
 						/>
