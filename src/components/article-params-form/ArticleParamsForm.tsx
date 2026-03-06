@@ -5,12 +5,12 @@ import { Button } from 'src/ui/button';
 import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { RadioGroup } from 'src/ui/radio-group';
+import { Text } from 'src/ui/text';
 import {
 	backgroundColors,
 	contentWidthArr,
 	fontColors,
 	fontFamilyOptions,
-	defaultArticleState,
 	ArticleStateType,
 	fontSizeOptions,
 	OptionType,
@@ -19,19 +19,40 @@ import {
 import styles from './ArticleParamsForm.module.scss';
 import { useEffect, useState } from 'react';
 
-export const ArticleParamsForm = () => {
+type ArticleParamsFormProps = {
+	currentState: ArticleStateType;
+	setCurrentState: React.Dispatch<React.SetStateAction<ArticleStateType>>;
+};
+
+export const ArticleParamsForm = ({
+	currentState,
+	setCurrentState,
+}: ArticleParamsFormProps) => {
 	const [isParamsFormOpen, setIsParamsFormOpen] = useState(false);
-	const [articleState, setArticleState] =
-		useState<ArticleStateType>(defaultArticleState);
+	const [tempState, setTempState] = useState<ArticleStateType>(currentState);
 
 	const toggleParamsForm = () => setIsParamsFormOpen((prev) => !prev);
+
 	const handleChange =
 		(fieldName: keyof ArticleStateType) => (selectedOption: OptionType) => {
-			setArticleState((prev) => ({
+			setTempState((prev) => ({
 				...prev,
 				[fieldName]: selectedOption,
 			}));
 		};
+
+	const handleApplication = () => {
+		setCurrentState(tempState);
+	};
+
+	const handleSubmit = (evt: React.FormEvent) => {
+		evt.preventDefault();
+		handleApplication();
+	};
+
+	const handleReset = () => {
+		setTempState(currentState);
+	};
 
 	useEffect(() => {
 		const handleClickOutside = (evt: MouseEvent) => {
@@ -57,36 +78,49 @@ export const ArticleParamsForm = () => {
 					[styles.container_open]: isParamsFormOpen,
 				})}
 				aria-hidden={!isParamsFormOpen}>
-				<form className={styles.form}>
+				<form className={styles.form} onSubmit={handleSubmit}>
+					<Text as='h2' size={31} weight={800} uppercase>
+						Задайте параметры
+					</Text>
+					<Select
+						selected={tempState.fontFamilyOption}
+						options={fontFamilyOptions}
+						title='Шрифт'
+						onChange={handleChange('fontFamilyOption')}
+					/>
+					<RadioGroup
+						name='fontSize'
+						options={fontSizeOptions}
+						selected={tempState.fontSizeOption}
+						title='Размер шрифта'
+						onChange={handleChange('fontSizeOption')}
+					/>
+					<Select
+						selected={tempState.fontColor}
+						options={fontColors}
+						title='Цвет шрифта'
+						onChange={handleChange('fontColor')}
+					/>
+					<Separator />
+					<Select
+						selected={tempState.backgroundColor}
+						options={backgroundColors}
+						title='Цвет фона'
+						onChange={handleChange('backgroundColor')}
+					/>
+					<Select
+						selected={tempState.contentWidth}
+						options={contentWidthArr}
+						title='Ширина контента'
+						onChange={handleChange('contentWidth')}
+					/>
 					<div className={styles.bottomContainer}>
-						<Select
-							selected={articleState.fontFamilyOption}
-							options={fontFamilyOptions}
-							onChange={handleChange('fontFamilyOption')}
+						<Button
+							title='Сбросить'
+							htmlType='reset'
+							type='clear'
+							onClick={handleReset}
 						/>
-						<RadioGroup
-							name='name'
-							options={fontSizeOptions}
-							selected={articleState.fontSizeOption}
-							title=' '
-						/>
-						<Select
-							selected={articleState.fontColor}
-							options={fontColors}
-							onChange={handleChange('fontColor')}
-						/>
-						<Separator />
-						<Select
-							selected={articleState.backgroundColor}
-							options={backgroundColors}
-							onChange={handleChange('backgroundColor')}
-						/>
-						<Select
-							selected={articleState.contentWidth}
-							options={contentWidthArr}
-							onChange={handleChange('contentWidth')}
-						/>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
 						<Button title='Применить' htmlType='submit' type='apply' />
 					</div>
 				</form>
