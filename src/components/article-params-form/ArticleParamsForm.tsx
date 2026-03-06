@@ -57,6 +57,8 @@ export const ArticleParamsForm = ({
 	};
 
 	useEffect(() => {
+		if (!isParamsFormOpen) return;
+
 		const handleClickOutside = (evt: MouseEvent) => {
 			const paramsForm = document.querySelector('aside');
 
